@@ -14,7 +14,7 @@ setting = 0
 async def on_ready():
     print(bot.user.name)
     print('디스코드세계를 돌아다니는 중이에요')
-    await client.change_presence(activity=discord.Game(name="외로운 봇들 귀가시키는 중..."))
+    await bot.change_presence(activity=discord.Game(name="외로운 봇들 귀가시키는 중..."))
 
 @bot.command()
 async def setchannel(ctx):
