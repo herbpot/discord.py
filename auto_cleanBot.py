@@ -1,6 +1,7 @@
 import discord
 from discord.channel import TextChannel
 from discord.ext import commands
+from selfauto import s,main
 
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
@@ -50,6 +51,38 @@ async def on_voice_state_update(member,before,after):
                     await channel.members[0].move_to(None)
 
 @bot.command()
+async def selfinfo(ctx,school1,school2,school3,name,day,password):
+    school = [school1,school2,school3]
+    f = open(f'info_{name}.txt','w')
+    open()
+    f.write(f'{school[0]}\n')
+    f.write(f'{school[1]}\n')
+    f.write(f'{school[2]}\n')
+    f.write(f'{name}\n')
+    f.write(f'{day}\n')
+    f.write(f'{password}\n')
+    f.close()
+    f = open('self_list.txt','w')
+    f.write(f'{name}\n')
+    f.close()
+    await ctx.send('등록 완료')
+
+@bot.command()
+async def selfstart(ctx,name) :
+    try :
+        f = open(f'info{name}.txt','r')
+        data = f.readlines()
+        school = [data[0].rstrip('\n'),data[1].rstrip('\n'),data[2].rstrip('\n')]
+        name = data[3].rstrip('\n')
+        day = data[4].rstrip('\n')
+        password = data[5].rstrip('\n')
+        start = s
+        s.setdata(start,password,school,name,day)
+        main()
+    except :
+        await ctx.send('정보 먼저 등록하세요(selfinfo)')
+        
+@bot.command()
 async def help(ctx) :
     await ctx.send('''
     지금 가능한 기능:
@@ -62,6 +95,8 @@ async def helpc(ctx) :
     await ctx.send('''
     지금 가능한 기능:
     setchannel(알림을 전송할 방을 지정해요)
+    selfinfo(자가진단 정보를 입력해요)
+    selfstart(자가진단을 시작해요(1회))
     ''')
 
 bot.run("ODU0NjU3ODExMjE5NDgwNjA2.YMnIHA.KtV3aIqRS6wjcMSrY1cuRHKSTB0")
