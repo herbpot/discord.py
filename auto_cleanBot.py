@@ -81,22 +81,21 @@ async def selfstart(ctx,name) :
         main()
     except :
         await ctx.send('정보 먼저 등록하세요(selfinfo)')
-        
+
 @bot.command()
 async def help(ctx) :
-    await ctx.send('''
-    지금 가능한 기능:
-    음성체널에 혼자 남은 봇 퇴장시키기
-    새로운 사람이 들어오면 알려주기(메세지를 입력할 방은 먼저 알려주세요)
-    명령어 리스트 보여주기(helpc)
-    ''')
+    embad = discord.Embed(title='help',description='도움말',color=0x00aaaa)
+    embad.add_field(name='',value='음성체널에 혼자 남은 봇 퇴장시키기',inline=False)
+    embad.add_field(name='',value='새로운 사람이 들어오면 알려주기(메세지를 입력할 방은 먼저 알려주세요)',inline=False)
+    embad.add_field(name='',value='명령어 리스트 보여주기(helpc)',inline=False)
+    await ctx.send(embad=embad)
+    
 @bot.command()
 async def helpc(ctx) :
-    await ctx.send('''
-    지금 가능한 기능:
-    setchannel(알림을 전송할 방을 지정해요)
-    selfinfo(자가진단 정보를 입력해요)
-    selfstart(자가진단을 시작해요(1회))
-    ''')
+    embad = discord.Embed(title='helpc',description='명령어 도움말',color=0x00aaaa)
+    embad.add_field(name='setchannel',value='신규유저의 알림을 전송할 방을 지정해요',inline=False)
+    embad.add_field(name='selfinfo',value='자가진단 정보를 입력해요',inline=False)
+    embad.add_field(name='selfstart',value='자가진단을 시작해요(1회)',inline=False)
+    await ctx.send(embad=embad)
 
 bot.run("ODU0NjU3ODExMjE5NDgwNjA2.YMnIHA.KtV3aIqRS6wjcMSrY1cuRHKSTB0")
