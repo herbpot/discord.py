@@ -3,7 +3,6 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 
-from urllib3.poolmanager import SSL_KEYWORDS
 URL_login, URL_main = 'https://hcs.eduro.go.kr/#/relogin', 'https://hcs.eduro.go.kr/#/main'
 
 class s :

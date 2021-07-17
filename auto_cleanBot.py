@@ -1,7 +1,7 @@
 import discord
 from discord.channel import TextChannel
 from discord.ext import commands
-from selfauto import s,main
+from dataseting import seter as st
 
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
@@ -51,43 +51,25 @@ async def on_voice_state_update(member,before,after):
                     await channel.members[0].move_to(None)
 
 @bot.command()
-async def selfinfo(ctx,school1,school2,school3,name,day,password):
-    school = [school1,school2,school3]
-    f = open(f'info_{name}.txt','w')
-    open()
-    f.write(f'{school[0]}\n')
-    f.write(f'{school[1]}\n')
-    f.write(f'{school[2]}\n')
-    f.write(f'{name}\n')
-    f.write(f'{day}\n')
-    f.write(f'{password}\n')
-    f.close()
-    f = open('self_list.txt','w')
-    f.write(f'{name}\n')
-    f.close()
+async def selfinfo(ctx,name,school1,school2,school3,day,password):
+    st(school1,school2,school3,name,day,password)
     await ctx.send('등록 완료')
+    await ctx.channel.purge(limit=1)
 
 @bot.command()
 async def selfstart(ctx,name) :
     try :
-        f = open(f'info{name}.txt','r')
-        data = f.readlines()
-        school = [data[0].rstrip('\n'),data[1].rstrip('\n'),data[2].rstrip('\n')]
-        name = data[3].rstrip('\n')
-        day = data[4].rstrip('\n')
-        password = data[5].rstrip('\n')
-        start = s
-        s.setdata(start,password,school,name,day)
-        main()
+        st.start(name)
     except :
-        await ctx.send('정보 먼저 등록하세요(selfinfo)')
+        await('자가진단 정보를 먼저 등록하세요')
 
 @bot.command()
 async def help(ctx) :
-    embad = discord.Embed(title='help',description='도움말',color=0x00aaaa)
-    embad.add_field(name='',value='음성체널에 혼자 남은 봇 퇴장시키기',inline=False)
-    embad.add_field(name='',value='새로운 사람이 들어오면 알려주기(메세지를 입력할 방은 먼저 알려주세요)',inline=False)
-    embad.add_field(name='',value='명령어 리스트 보여주기(helpc)',inline=False)
+    embad = discord.Embed(title='help',description='기능 도움말',color=0x00aaaa)
+    embad.add_field(name='음성체널에 혼자 남은 봇 퇴장시키기',value='자동이에요',inline=False)
+    embad.add_field(name='새로운 사람이 들어오면 알려주기',value='메세지를 입력할 방은 먼저 알려주세요',inline=False)
+    embad.add_field(name='명령어 리스트 보여주기',value='helpc',inline=False)
+    embad.add_field(name='자동 자가진단',value='selfinfo,selfstart',inline=False)
     await ctx.send(embad=embad)
     
 @bot.command()
@@ -97,5 +79,12 @@ async def helpc(ctx) :
     embad.add_field(name='selfinfo',value='자가진단 정보를 입력해요',inline=False)
     embad.add_field(name='selfstart',value='자가진단을 시작해요(1회)',inline=False)
     await ctx.send(embad=embad)
+
+@bot.command()
+async def chelp(ctx, m):
+    if m == 'selfinfo' :
+        embad = discord.Embed(title='chelp',description='명령어 사용 도움말',color=0x00aaaa)
+        embad.add_field(name='자가진단 정보를 입력해요',value='selfinfo 이름 지역 학교급 학교이름 생일(6자리) 비밀번호',inline=False)
+        await ctx.send(embad=embad)
 
 bot.run("ODU0NjU3ODExMjE5NDgwNjA2.YMnIHA.KtV3aIqRS6wjcMSrY1cuRHKSTB0")
