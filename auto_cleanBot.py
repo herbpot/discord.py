@@ -1,7 +1,7 @@
 import discord
 from discord.channel import TextChannel
 from discord.ext import commands
-# from dataseting import seter as st
+from dataseting import seter as st
 
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
