@@ -1,7 +1,6 @@
 import discord
 from discord.channel import TextChannel
 from discord.ext import commands
-from dataseting import seter as st
 
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
@@ -201,13 +200,13 @@ async def on_voice_state_update(member,before,after):
 
 @bot.command()
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
-    log = st.setdata(name,school1,school2,school3,day,password)
+    log = seter.setdata(name,school1,school2,school3,day,password)
     await ctx.channel.purge(limit=1)
     await ctx.send(log)
 
 @bot.command()
 async def selfstart(ctx,name) :
-    log = st.start(name)
+    log = seter.start(name)
     await ctx.channel.purge(limit=1)
     await ctx.send(log)
 
