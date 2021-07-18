@@ -52,39 +52,44 @@ async def on_voice_state_update(member,before,after):
 
 @bot.command()
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
-    st(school1,school2,school3,name,day,password)
-    await ctx.send('등록 완료')
+    log = st.setdata(name,school1,school2,school3,day,password)
     await ctx.channel.purge(limit=1)
+    await ctx.send(log)
 
 @bot.command()
 async def selfstart(ctx,name) :
-    try :
-        st.start(name)
-    except :
-        await('자가진단 정보를 먼저 등록하세요')
+    log = st.start(name)
+    await ctx.channel.purge(limit=1)
+    await ctx.send(log)
+
+
+@bot.command()
+async def delmsg(ctx,num : int):
+    await ctx.channel.purge(limit=num + 1)
+    await ctx.send(f'{num}개 청소 완료')
 
 @bot.command()
 async def help(ctx) :
-    embad = discord.Embed(title='help',description='기능 도움말',color=0x00aaaa)
-    embad.add_field(name='음성체널에 혼자 남은 봇 퇴장시키기',value='자동이에요',inline=False)
-    embad.add_field(name='새로운 사람이 들어오면 알려주기',value='메세지를 입력할 방은 먼저 알려주세요',inline=False)
-    embad.add_field(name='명령어 리스트 보여주기',value='helpc',inline=False)
-    embad.add_field(name='자동 자가진단',value='selfinfo,selfstart',inline=False)
-    await ctx.send(embad=embad)
+    embed = discord.Embed(title='help',description='기능 도움말',color=0x00aaaa)
+    embed.add_field(name='음성체널에 혼자 남은 봇 퇴장시키기',value='자동이에요',inline=False)
+    embed.add_field(name='새로운 사람이 들어오면 알려주기',value='메세지를 입력할 방은 먼저 알려주세요',inline=False)
+    embed.add_field(name='명령어 리스트 보여주기',value='helpc',inline=False)
+    embed.add_field(name='자동 자가진단',value='selfinfo,selfstart',inline=False)
+    await ctx.send(embed=embed)
     
 @bot.command()
 async def helpc(ctx) :
-    embad = discord.Embed(title='helpc',description='명령어 도움말',color=0x00aaaa)
-    embad.add_field(name='setchannel',value='신규유저의 알림을 전송할 방을 지정해요',inline=False)
-    embad.add_field(name='selfinfo',value='자가진단 정보를 입력해요',inline=False)
-    embad.add_field(name='selfstart',value='자가진단을 시작해요(1회)',inline=False)
-    await ctx.send(embad=embad)
+    embed = discord.Embed(title='helpc',description='명령어 도움말',color=0x00aaaa)
+    embed.add_field(name='setchannel',value='신규유저의 알림을 전송할 방을 지정해요',inline=False)
+    embed.add_field(name='selfinfo',value='자가진단 정보를 입력해요',inline=False)
+    embed.add_field(name='selfstart',value='자가진단을 시작해요(1회)',inline=False)
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def chelp(ctx, m):
     if m == 'selfinfo' :
-        embad = discord.Embed(title='chelp',description='명령어 사용 도움말',color=0x00aaaa)
-        embad.add_field(name='자가진단 정보를 입력해요',value='selfinfo 이름 지역 학교급 학교이름 생일(6자리) 비밀번호',inline=False)
-        await ctx.send(embad=embad)
+        embed = discord.Embed(title='chelp',description='명령어 사용 도움말',color=0x00aaaa)
+        embed.add_field(name='자가진단 정보를 입력해요',value='selfinfo 이름 지역 학교급 학교이름 생일(6자리) 비밀번호',inline=False)
+        await ctx.send(embed=embed)
 
 bot.run("ODU0NjU3ODExMjE5NDgwNjA2.YMnIHA.KtV3aIqRS6wjcMSrY1cuRHKSTB0")
