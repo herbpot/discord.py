@@ -6,11 +6,11 @@ import time
 URL_login, URL_main = 'https://hcs.eduro.go.kr/#/relogin', 'https://hcs.eduro.go.kr/#/main'
 
 class s :
-    def setdata(self,password,school,name,day):
-        self.password = str(password)
-        self.school = list(school)
-        self.name = str(name)
-        self.day = str(day)
+    def setdata(self,datalist):
+        self.password = str(datalist[-1])
+        self.school = list([datalist[1],datalist[2],datalist[3]])
+        self.name = str(datalist[0])
+        self.day = str(datalist[4])
             
     def schoolsearch(self):
         time.sleep(1)
