@@ -68,7 +68,7 @@ class s :
 
     def selfcheck() :
         # driver.implicitly_wait(5)
-        time.sleep(3)
+        time.sleep(5)
         search = driver.find_element_by_css_selector('#container > div > section.memberWrap > div:nth-child(2) > ul > li > a') ##container > div > section.memberWrap > div:nth-child(2) > ul > li > a
         search.send_keys(Keys.ENTER)
         search = driver.find_element_by_css_selector('#survey_q1a1')
@@ -208,14 +208,14 @@ async def on_voice_state_update(member,before,after):
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
     await ctx.send('자가진단 정보 저장 중...')
     log = seter(name,school1,school2,school3,day,password).setdata()
-    await ctx.channel.purge(limit=1)
+    await ctx.channel.purge(limit=2)
     await ctx.send(str(log))
 
 @bot.command()
 async def selfstart(ctx,name) :
     await ctx.send('자가진단 중...')
     log = seter(name).start()
-    await ctx.channel.purge(limit=1)
+    await ctx.channel.purge(limit=2)
     await ctx.send(log)
 
 
