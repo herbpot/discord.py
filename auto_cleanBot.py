@@ -2,6 +2,7 @@ import discord
 from discord.channel import TextChannel
 from discord.ext import commands
 import traceback
+import selenium
 
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
@@ -17,6 +18,7 @@ setting = 0
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait as Ww
 import time
 
 URL_login, URL_main = 'https://hcs.eduro.go.kr/#/relogin', 'https://hcs.eduro.go.kr/#/main'
@@ -68,6 +70,7 @@ class s :
 
     def selfcheck() :
         driver.implicitly_wait(10)
+        Ww(driver,10)
         time.sleep(5)
         search = driver.find_element_by_css_selector('#container > div > section.memberWrap > div:nth-child(2) > ul > li > a') ##container > div > section.memberWrap > div:nth-child(2) > ul > li > a
         search.send_keys(Keys.ENTER)
