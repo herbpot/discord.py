@@ -10,6 +10,10 @@ time = 0
 com_channel = 0
 setting = 0
 
+
+
+
+
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -36,7 +40,7 @@ class s :
         select = Select(search)
         select.select_by_visible_text(self.school[1])
         search = driver.find_element_by_css_selector('#orgname')
-        search.send_keys(self.school[2])
+        search.send_keys(str(self.school[2]))
         search = driver.find_element_by_css_selector('#softBoardListLayer > div.layerContentsWrap > div.layerSchoolSelectWrap > table > tbody > tr:nth-child(3) > td:nth-child(3) > button')
         search.send_keys(Keys.ENTER)
         search = driver.find_element_by_css_selector('#softBoardListLayer > div.layerContentsWrap > div.layerSchoolSelectWrap > ul > li > a')
@@ -80,7 +84,7 @@ class s :
 def main() :
     global driver
     start = s
-    driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver',chrome_options='/app/.apt/usr/bin/google-chrome')
+    driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver')
     driver.implicitly_wait(1)
     driver.get(URL_login)
     search = driver.find_element_by_css_selector('#btnConfirm2')
