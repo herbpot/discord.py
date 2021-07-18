@@ -69,7 +69,7 @@ class s :
         search.send_keys(Keys.ENTER)
 
     def selfcheck() :
-        driver.implicitly_wait(10)
+        driver.implicitly_wait(100)
         Ww(driver,10)
         time.sleep(5)
         search = driver.find_element_by_css_selector('#container > div > section.memberWrap > div:nth-child(2) > ul > li > a') ##container > div > section.memberWrap > div:nth-child(2) > ul > li > a
@@ -87,7 +87,9 @@ class s :
 def main() :
     global driver
     start = s
-    driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver')
+    option = webdriver.ChromeOptions()
+    option.add_argument('headless')
+    driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver',options=option)
     driver.implicitly_wait(1)
     driver.get(URL_login)
     search = driver.find_element_by_css_selector('#btnConfirm2')
