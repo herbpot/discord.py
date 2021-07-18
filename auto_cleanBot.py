@@ -67,7 +67,7 @@ class s :
         search.send_keys(Keys.ENTER)
 
     def selfcheck() :
-        # driver.implicitly_wait(5)
+        driver.implicitly_wait(5)
         time.sleep(5)
         search = driver.find_element_by_css_selector('#container > div > section.memberWrap > div:nth-child(2) > ul > li > a') ##container > div > section.memberWrap > div:nth-child(2) > ul > li > a
         search.send_keys(Keys.ENTER)
