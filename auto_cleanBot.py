@@ -1,6 +1,7 @@
 import discord
 from discord.channel import TextChannel
 from discord.ext import commands
+import traceback
 
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
@@ -138,7 +139,8 @@ class seter() :
                 self.worksheet.insert_row([self.name, self.school[0], self.school[1], self.school[2], self.day, self.password,], 1)
                 log = '데이터 저장 성공'
             except Exception as e:
-                log = f'데이터 저장 실패 log : {e}'
+                log = f'''데이터 저장 실패 log : {e}
+                traceback : {traceback.print_exc()}'''
             return str(log)
 
 
@@ -146,8 +148,9 @@ class seter() :
         try :
             self.row_data = self.worksheet.row_values(self.worksheet.find(f'{self.name}').row)
         except Exception as e:
-            log = f'데이터 불러오기 실패 log : {e}'
-            return log
+            log = f'''데이터 저장 실패 log : {e}
+            traceback : {traceback.print_exc()}'''
+            return str(log)
         
         try :
             start = s
