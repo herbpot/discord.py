@@ -83,7 +83,7 @@ class s :
 def main() :
     global driver
     start = s
-    driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver.exe')
+    driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver',chrome_options='/app/.apt/usr/bin/google-chrome')
     driver.implicitly_wait(1)
     driver.get(URL_login)
     search = driver.find_element_by_css_selector('#btnConfirm2')
