@@ -21,7 +21,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait as Ww
 import time
 
-URL_login, URL_main = 'https://hcs.eduro.go.kr/#/relogin', 'https://hcs.eduro.go.kr/#/main'
+URL_login, URL_main = 'https://hcs.eduro.go.kr/#/loginHome', 'https://hcs.eduro.go.kr/#/main'
 
 class s :
     def setdata(self,datalist):
