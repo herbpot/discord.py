@@ -10,6 +10,155 @@ time = 0
 com_channel = 0
 setting = 0
 
+
+
+
+
+from selenium.webdriver.support.ui import Select
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
+
+URL_login, URL_main = 'https://hcs.eduro.go.kr/#/relogin', 'https://hcs.eduro.go.kr/#/main'
+
+class s :
+    def setdata(self,datalist):
+        self.password = str(datalist[-1])
+        self.school = list([datalist[1],datalist[2],datalist[3]])
+        self.name = str(datalist[0])
+        self.day = str(datalist[4])
+            
+    def schoolsearch(self):
+        time.sleep(1)
+        # driver.implicitly_wait(0.5)
+        search = driver.find_element_by_css_selector('#WriteInfoForm > table > tbody > tr:nth-child(1) > td > button')
+        search.send_keys(Keys.ENTER)
+        search = driver.find_element_by_css_selector('#sidolabel')
+        select = Select(search)
+        select.select_by_visible_text(self.school[0])
+        search = driver.find_element_by_css_selector('#crseScCode')
+        select = Select(search)
+        select.select_by_visible_text(self.school[1])
+        search = driver.find_element_by_css_selector('#orgname')
+        search.send_keys(str(self.school[2]))
+        search = driver.find_element_by_css_selector('#softBoardListLayer > div.layerContentsWrap > div.layerSchoolSelectWrap > table > tbody > tr:nth-child(3) > td:nth-child(3) > button')
+        search.send_keys(Keys.ENTER)
+        search = driver.find_element_by_css_selector('#softBoardListLayer > div.layerContentsWrap > div.layerSchoolSelectWrap > ul > li > a')
+        search.send_keys(Keys.ENTER)
+        search = driver.find_element_by_css_selector('#softBoardListLayer > div.layerContentsWrap > div.layerBtnWrap > input')
+        search.send_keys(Keys.ENTER)
+
+    def check(self) :
+        time.sleep(1)
+        # driver.implicitly_wait(0.5)
+        search = driver.find_element_by_css_selector('#user_name_input')
+        search.send_keys(str(self.name))
+        search = driver.find_element_by_css_selector('#birthday_input')
+        search.send_keys(str(self.day))
+        search = driver.find_element_by_css_selector('#btnConfirm')
+        search.send_keys(Keys.ENTER)
+
+    def num(self) :
+        # driver.implicitly_wait(5)
+        time.sleep(1)
+        search = driver.find_element_by_css_selector('#WriteInfoForm > table > tbody > tr > td > input')
+        search.send_keys(str(self.password))
+        search = driver.find_element_by_css_selector('#btnConfirm')
+        search.send_keys(Keys.ENTER)
+
+    def selfcheck() :
+        # driver.implicitly_wait(5)
+        time.sleep(2)
+        search = driver.find_element_by_css_selector('#container > div > section.memberWrap > div:nth-child(2) > ul > li > a') ##container > div > section.memberWrap > div:nth-child(2) > ul > li > a
+        search.send_keys(Keys.ENTER)
+        search = driver.find_element_by_css_selector('#survey_q1a1')
+        search.click()
+        search = driver.find_element_by_css_selector('#survey_q2a1')
+        search.click()
+        search = driver.find_element_by_css_selector('#survey_q3a1')
+        search.click()   
+        search = driver.find_element_by_css_selector('#btnConfirm')
+        search.click()
+
+    
+def main() :
+    global driver
+    start = s
+    driver = webdriver.Chrome(executable_path='C:/Users/inwoo/Google Drive/myFile_inwoo/hobby/파이썬/python/chromedriver.exe')
+    driver.implicitly_wait(1)
+    driver.get(URL_login)
+    search = driver.find_element_by_css_selector('#btnConfirm2')
+    search.send_keys(Keys.ENTER)
+    driver.implicitly_wait(3)
+    s.schoolsearch(start)
+    s.check(start)
+    s.num(start)
+    s.selfcheck()
+
+    # search = driver.find_element_by_class_name("input_text_common")
+    # try:
+    #     search = driver.find_element_by_css_selector('#secondaryPwForm > table > tbody > tr > td > input')
+    #     search.send_keys(str(password))
+    # except :
+    time.sleep(1)
+
+    print('end')
+
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+
+class seter() :
+
+
+    def __init__(self,name,school1=None,school2=None,school3=None,day=None,password=None):
+        self.school1 = school1
+        self.school2 = school2
+        self.school3 = school3
+        self.name = name
+        self.day = day
+        self.password = password
+        scope = [
+        'https://spreadsheets.google.com/feeds',
+        'https://www.googleapis.com/auth/drive',
+        ]
+
+        json_file_name = 'usekey.json'
+
+        credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file_name, scope)
+        gc = gspread.authorize(credentials)
+        spreadsheet_url = 'https://docs.google.com/spreadsheets/d/1DkJOReg8aC9BwOY3vfkcW5wmGGt3d0egGejkj7MEZ-Q/edit?usp=sharing'
+
+        doc = gc.open_by_url(spreadsheet_url)
+
+        self.worksheet = doc.worksheet('시트1')
+        
+        
+    def setdata(self) :
+        if not self.school1==None&self.school2==None&self.school3==None&self.day==None&self.password==None :
+            try :
+                self.worksheet.insert_row([self.name, self.school[0], self.school[1], self.school[2], self.day, self.password,], 1)
+                return '데이터 저장 성공'
+            except :
+                return '데이터 저장 실패'
+
+
+    def start(self):
+        try :
+            self.row_data = self.worksheet.row_values(self.worksheet.find(f'{self.name}'))
+        except :
+            return '데이터 불러오기 실패'
+        
+        try :
+            start = s
+            s.setdata(start,self.row_data)
+            main()
+            return '자가진단 완료'
+        except :
+            return '자가진단 실패'
+
+
+
 @bot.event
 async def on_ready():
     print(bot.user.name)

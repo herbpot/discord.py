@@ -1,2 +1,5 @@
 discord.py
-selfchecking
+selenium
+time
+gspread
+oauth2client
