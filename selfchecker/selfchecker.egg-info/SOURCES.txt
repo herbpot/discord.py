@@ -1,6 +1,0 @@
-README.md
-setup.py
-selfchecker.egg-info/PKG-INFO
-selfchecker.egg-info/SOURCES.txt
-selfchecker.egg-info/dependency_links.txt
-selfchecker.egg-info/top_level.txt
