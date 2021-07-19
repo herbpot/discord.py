@@ -18,6 +18,7 @@ from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait as Ww
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 URL_login, URL_main = 'https://hcs.eduro.go.kr/#/loginHome', 'https://hcs.eduro.go.kr/#/main'
@@ -86,9 +87,12 @@ class s :
 def main() :
     global driver
     start = s
-    option = webdriver.ChromeOptions()
-    option.add_argument('headless')
-    driver = webdriver.Chrome(executable_path='/app/.chromedriver/bin/chromedriver',options=option)
+    gChromeOptions = webdriver.ChromeOptions()
+    gChromeOptions.add_argument("window-size=1920x1480")
+    gChromeOptions.add_argument("disable-dev-shm-usage")
+    driver = webdriver.Chrome(
+        chrome_options=gChromeOptions, executable_path=ChromeDriverManager().install()
+    )
     driver.implicitly_wait(1)
     driver.get(URL_login)
     search = driver.find_element_by_css_selector('#btnConfirm2')
@@ -144,7 +148,7 @@ class seter() :
                 log = '데이터 저장 성공'
             except Exception as e:
                 log = f'''데이터 저장 실패 log : {e}
-                traceback : {traceback.print_exc()}'''
+                traceback : {traceback.print_exc()}...'''
             return str(log)
 
 
@@ -153,7 +157,7 @@ class seter() :
             self.row_data = self.worksheet.row_values(self.worksheet.find(f'{self.name}').row)
         except Exception as e:
             log = f'''데이터 저장 실패 log : {e}
-            traceback : {traceback.print_exc()}'''
+            traceback : {traceback.print_exc()}...'''
             return str(log)
         
         try :
