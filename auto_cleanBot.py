@@ -2,7 +2,6 @@ import discord
 from discord.channel import TextChannel
 from discord.ext import commands
 import traceback
-import selenium
 
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
@@ -29,7 +28,7 @@ class s :
         self.school = list([datalist[1],datalist[2],datalist[3]])
         self.name = str(datalist[0])
         self.day = str(datalist[4])
-
+            
     def schoolsearch(self):
         time.sleep(1)
         # driver.implicitly_wait(0.5)
@@ -79,11 +78,11 @@ class s :
         search = driver.find_element_by_css_selector('#survey_q2a1')
         search.click()
         search = driver.find_element_by_css_selector('#survey_q3a1')
-        search.click()
+        search.click()   
         search = driver.find_element_by_css_selector('#btnConfirm')
         search.click()
 
-
+    
 def main() :
     global driver
     start = s
@@ -136,8 +135,8 @@ class seter() :
         doc = gc.open_by_url(spreadsheet_url)
 
         self.worksheet = doc.worksheet('시트1')
-
-
+        
+        
     def setdata(self) :
         # if not self.school1=='' and self.school2=='' and self.school3=='' and self.day=='' and self.password=='' :
             try :
@@ -156,7 +155,7 @@ class seter() :
             log = f'''데이터 저장 실패 log : {e}
             traceback : {traceback.print_exc()}'''
             return str(log)
-
+        
         try :
             start = s
             s.setdata(start,self.row_data)
@@ -164,7 +163,7 @@ class seter() :
             log = '자가진단 완료'
         except Exception as e:
             log = f'자가진단 실패 log : {e}'
-
+        
         return str(log)
 
 
@@ -211,17 +210,16 @@ async def on_voice_state_update(member,before,after):
 
 @bot.command()
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
+    await ctx.channel.purge(limit=1)
     await ctx.send('자가진단 정보 저장 중...')
     log = seter(name,school1,school2,school3,day,password).setdata()
-    await ctx.channel.purge(limit=2)
     await ctx.send(str(log))
-
 
 @bot.command()
 async def selfstart(ctx,name) :
+    await ctx.channel.purge(limit=1)
     await ctx.send('자가진단 중...')
     log = seter(name).start()
-    await ctx.channel.purge(limit=2)
     await ctx.send(log)
 
 
@@ -238,7 +236,7 @@ async def help(ctx) :
     embed.add_field(name='명령어 리스트 보여주기',value='helpc',inline=False)
     embed.add_field(name='자동 자가진단',value='selfinfo,selfstart',inline=False)
     await ctx.send(embed=embed)
-
+    
 @bot.command()
 async def helpc(ctx) :
     embed = discord.Embed(title='helpc',description='명령어 도움말',color=0x00aaaa)
