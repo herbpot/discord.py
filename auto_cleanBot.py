@@ -72,7 +72,7 @@ class s :
         driver.implicitly_wait(100)
         Ww(driver,10)
         time.sleep(5)
-        search = driver.find_element_by_css_selector('#container > div > section.memberWrap > div:nth-child(2) > ul > li > a') ##container > div > section.memberWrap > div:nth-child(2) > ul > li > a
+        search = driver.find_element_by_css_selector('#container > div > section.memberWrap > div:nth-child(2) > ul > li') ##container > div > section.memberWrap > div:nth-child(2) > ul > li > a
         search.send_keys(Keys.ENTER)
         search = driver.find_element_by_css_selector('#survey_q1a1')
         search.click()
