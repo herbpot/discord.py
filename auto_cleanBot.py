@@ -2,24 +2,48 @@ import discord
 from discord.channel import TextChannel
 from discord.ext import commands
 import traceback
-
-bot = commands.Bot(command_prefix='*')
-bot.remove_command('help')
-
-time = 0
-com_channel = 0
-setting = 0
-
-
-
-
-
+from discord.utils import get
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait as Ww
 from webdriver_manager.chrome import ChromeDriverManager
 import time
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from konlpy.tag import Okt
+
+class natural():
+    def __init__(self):
+        self.okt = Okt()
+        self.text = '지금 뭐하고 있어?.'
+        self.text_dic = {}
+
+    def text_process(self,text):
+        text_nouns = self.okt.nouns(text)
+
+        for i in range(len(text_nouns)) :
+            self.text_dic[text_nouns[i]] = True
+
+
+    def check(self):
+        if self.text_dic['뭐'] :
+            answer = '지금은 탄생중'
+            print(answer)
+            return answer
+            
+
+
+
+bot = commands.Bot(command_prefix='*')
+bot.remove_command('help')
+
+com_channel = 0
+role_channel = 0
+setrule = 0
+giverule = ''
+
+
 
 URL_login, URL_main = 'https://hcs.eduro.go.kr/#/loginHome', 'https://hcs.eduro.go.kr/#/main'
 
@@ -112,9 +136,6 @@ def main() :
 
     print('end')
 
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
 
 class seter() :
 
@@ -179,29 +200,36 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='외로운 봇들 귀가시키는 중...'))
 
 @bot.command()
-async def setchannel(ctx):
+async def setchannel(ctx,gps,channelcode=None):
     if ctx.message.author.guild_permissions.manage_messages:
-        global time,com_channel,setting
-        if time == 0 :
-            await ctx.send('입장 메세지를 이 체널에 보내려면 해당 명령어를 다시 입력 하세요')
-        if time == 1 :
-            com_channel = TextChannel.id
-            await ctx.send('저장 완료')
-            print(com_channel, TextChannel.id)
-
-        time = time + 1
-
-        if time == 2 :
-            time = 0
-        setting = 1
+        global com_channel,role_channel
+        if gps == '역할' :
+            role_channel = channelcode
+            await ctx.send('새로 역할을 지급하지 않을 역할을 입력하세요')
+            @bot.event
+            def on_message(first,message):
+                if first == '*':
+                    global setrule
+                    setrule = message
+                    print('set!')
+            await ctx.send('지급할 역할을 입력하세요')
+            @bot.event
+            def on_message(first,message):
+                if first == '*':
+                    global giverule
+                    giverule = message
+                    print('set!')
+                    
+        com_channel = TextChannel.id
+        await ctx.send('저장 완료')
+        print(com_channel, TextChannel.id)
 
 @bot.event
 async def on_member_join(member):
-    global com_channel,setting
-    if setting == 1 :
-        channel = com_channel
-        msg = '<@{}>님이 달 저편에 새롭게 착륙하셨습니다 모두 환영해 주세요'.format(str(member.id))
-        channel.send()
+    global com_channel
+    channel = com_channel
+    msg = '<@{}>님이 달 저편에 새롭게 착륙하셨습니다 모두 환영해 주세요'.format(str(member.id))
+    await channel.send(msg)
 
 @bot.event
 async def on_voice_state_update(member,before,after):
@@ -211,6 +239,14 @@ async def on_voice_state_update(member,before,after):
             for role in channel.members[0].roles :
                 if member.bot :
                     await channel.members[0].move_to(None)
+        if channel == role_channel :
+            for mem in channel.member :
+                if not mem.role == setrule :
+                    #역할지급
+                    global giverule
+                    role_name = get(guild.roles, name=giverule)
+                    await mem.add_rules(role_name)
+                    print('역할 지급!')
 
 @bot.command()
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
