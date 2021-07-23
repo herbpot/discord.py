@@ -40,8 +40,8 @@ bot.remove_command('help')
 
 com_channel = 0
 role_channel = 0
-setrule = 0
-giverule = ''
+setrole = 0
+giverole = ''
 
 
 
@@ -192,6 +192,7 @@ class seter() :
         return str(log)
 
 
+role_check = lambda b : {b[i] : True for i in range(len(b))} 
 
 @bot.event
 async def on_ready():
@@ -200,29 +201,23 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='외로운 봇들 귀가시키는 중...'))
 
 @bot.command()
-async def setchannel(ctx,gps,channelcode=None):
+async def setchannel(ctx,gps,role='',give_role='',channelcode=None):
     if ctx.message.author.guild_permissions.manage_messages:
-        global com_channel,role_channel
+        global com_channel,role_channel,setrole,giverole
         if gps == '역할' :
-            role_channel = channelcode
-            await ctx.send('새로 역할을 지급하지 않을 역할을 입력하세요')
-            @bot.event
-            def on_message(first,message):
-                if first == '*':
-                    global setrule
-                    setrule = message
-                    print('set!')
-            await ctx.send('지급할 역할을 입력하세요')
-            @bot.event
-            def on_message(first,message):
-                if first == '*':
-                    global giverule
-                    giverule = message
-                    print('set!')
-                    
-        com_channel = TextChannel.id
-        await ctx.send('저장 완료')
-        print(com_channel, TextChannel.id)
+            setrole = role #중복 방지
+            giverole = give_role #지급 역할
+            if ctx.author.voice and ctx.author.voice.channel: # 채널에 들어가 있는지 파악
+                role_channel = ctx.author.voice.channel # 채널 구하기
+                await role_channel.connect() # 채널 연결
+                # await ctx.send('성공!')
+            else: # 유저가 채널에 없으면
+                await ctx.send("채널에 연결되지 않았습니다.") # 출력
+            await ctx.send(f'지정된 체널 : {role_channel} , 제외역할 : {setrole}, 주어질 역할 : {giverole}')
+        if gps == '환영' :
+            com_channel = TextChannel.id
+            await ctx.send('저장 완료')
+            print(com_channel, TextChannel.id)
 
 @bot.event
 async def on_member_join(member):
@@ -233,20 +228,32 @@ async def on_member_join(member):
 
 @bot.event
 async def on_voice_state_update(member,before,after):
-    guild = discord.Guild
-    for channel in member.guild.voice_channels :
-        if len(channel.members) == 1 :
-            for role in channel.members[0].roles :
-                if member.bot :
-                    await channel.members[0].move_to(None)
-        if channel == role_channel :
-            for mem in channel.member :
-                if not mem.role == setrule :
-                    #역할지급
-                    global giverule
-                    role_name = get(guild.roles, name=giverule)
-                    await mem.add_rules(role_name)
-                    print('역할 지급!')
+    guild = discord.Guild.id
+    try :
+        print(type(before.channel))
+        if len(before.channel.members) == 1 :
+            if before.channel.members[0].bot :
+                await before.channel.members[0].move_to(None)
+    except Exception as e :
+        print(e)
+        print('leave')
+    try :
+        print(type(after.channel))
+        print(after.channel)
+        if after.channel == role_channel :
+            for people in after.channel.memebers :
+                people_roles_dic = role_check(people.roles)
+                print(people_roles_dic)
+                if not people_roles_dic[setrole] :
+                    await people.add_roles(giverole)
+                    print('given')    
+    except Exception as e :
+        print(e)
+        print('give')
+    # print(after.channel.members)
+    # print(before.channel.members)
+
+            
 
 @bot.command()
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
