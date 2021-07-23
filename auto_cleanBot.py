@@ -1,3 +1,4 @@
+from os import name
 import discord
 from discord.channel import TextChannel
 from discord.ext import commands
@@ -202,7 +203,7 @@ async def on_ready():
     print('디스코드세계를 돌아다니는 중이에요')
     await bot.change_presence(activity=discord.Game(name='외로운 봇들 귀가시키는 중...'))
 
-@bot.command()
+@bot.command(name='setchannel',help='역할부여,환영인사 출력을 설정체널에서 합니다',usage='*setchannel 옵션 (필요하다면)제외역할 (필요하다면)부여역할')
 @has_permissions()
 async def setchannel(ctx,gps,role='',give_role='',channelcode=None):
     if ctx.message.author.guild_permissions.manage_messages:
@@ -267,7 +268,7 @@ async def on_voice_state_update(member,before,after):
 
             
 
-@bot.command()
+@bot.command(name='selfinfo',help='자가진단에 필요한 정보를 입력,저장합니다',usage='*selfinfo 이름 지역 학교급 학교이름 생일(6자리) 비밀번호')
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
     await ctx.channel.purge(limit=1)
     await ctx.send('자가진단 정보 저장 중...')
@@ -279,7 +280,7 @@ async def selfinfo_error(ctx,error):
     if isinstance(error,MissingRequiredArgument):
         await ctx.send('자가진단 정보를 전부 입력하세요')
 
-@bot.command()
+@bot.command(name='selfstart', help='자가진단을 시작합니다',usage='*selfstart 이름')
 async def selfstart(ctx,name) :
     await ctx.channel.purge(limit=1)
     await ctx.send('자가진단 중...')
@@ -293,7 +294,7 @@ async def start_error(ctx, error):
 
 
 
-@bot.command()
+@bot.command(name='delmsg',help='메세지를 삭제합니다',usage='*delmsg 삭제할메세지개수')
 @has_permissions()
 async def delmsg(ctx,num : int):
     await ctx.channel.purge(limit=num + 1)
@@ -306,11 +307,11 @@ async def delmsg_error(ctx,error):
     if isinstance(error, BadArgument):
         await ctx.send('숫자로 입력하세요')
 
-@bot.command()
+@bot.command(name='version',help='봇의 버전을 출력합니다',usage='*version')
 async def version(ctx):
-    await ctx.send('2.0.0')
+    await ctx.send('2.1.0')
 
-@bot.command()
+@bot.command(name='ping',help='핑을 출력합니다',usage='*ping')
 async def ping(ctx):
     await ctx.send(f'pong! {round(bot.latency + 1000)}ms')
 
@@ -343,5 +344,33 @@ async def chelp(ctx, m):
         embed.add_field(name='역할',value='음성채널에 들어간 상태로 사용해요 *setchannel 환영 지급제외역할 지급할역할',inline=False)
         embed.add_field(name='환영',value='신규인원 환영메세지를 출력해요',inline=False)
         await ctx.send(embed=embed)
+
+@bot.command(name="도움")
+async def help_command(self, ctx, func=None):
+    if func is None:
+        embed = discord.Embed(title="Python Bot 도움말", description="접두사는 `!` 입니다.") #Embed 생성
+        cog_list = ["Core"] # Cog 리스트 추가
+        for x in cog_list: # cog_list에 대한 반복문
+            cog_data = self.app.get_cog(x) # x에 대해 Cog 데이터를 구하기
+            command_list = cog_data.get_commands() # cog_data에서 명령어 리스트 구하기
+            embed.add_field(name=x, value=" ".join([c.name for c in command_list]), inline=True) # 필드 추가
+        await ctx.send(embed=embed) # 보내기
+    else: # func가 None이 아니면
+        command_notfound = True # 이걸 어떻게 쓸지 생각해보세요!
+        for _title, cog in self.app.cogs.items(): # title, cog로 item을 돌려주는데 title은 필요가 없습니다.
+            if not command_notfound: # False면
+                break # 반복문 나가기
+
+            else: # 아니면
+                for title in cog.get_commands(): # 명령어를 아까처럼 구하고 title에 순차적으로 넣습니다.
+                    if title.name == func: # title.name이 func와 같으면
+                        cmd = self.app.get_command(title.name) # title의 명령어 데이터를 구합니다.
+                        embed = discord.Embed(title=f"명령어 : {cmd}", description=cmd.help) # Embed 만들기
+                        embed.add_field(name="사용법", value=cmd.usage) # 사용법 추가
+                        await ctx.send(embed=embed) # 보내기
+                        command_notfound = False
+                        break # 반복문 나가기
+                    else:
+                        command_notfound = True
 
 bot.run("ODU0NjU3ODExMjE5NDgwNjA2.YMnIHA.KtV3aIqRS6wjcMSrY1cuRHKSTB0")
