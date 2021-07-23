@@ -306,7 +306,7 @@ async def delmsg_error(ctx,error):
     if isinstance(error, BadArgument):
         await ctx.send('숫자로 입력하세요')
 
-@bot.command
+@bot.command()
 async def version(ctx):
     await ctx.send('2.0.0')
 
