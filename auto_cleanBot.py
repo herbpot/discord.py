@@ -2,7 +2,9 @@ import discord
 from discord.channel import TextChannel
 from discord.ext import commands
 import traceback
-from discord.utils import get
+from discord.ext.commands.core import has_permissions
+from discord.ext.commands.errors import BadArgument, MissingRequiredArgument
+from discord.ext import commands
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -38,10 +40,10 @@ class natural():
 bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
 
-com_channel = 0
-role_channel = 0
-setrole = 0
-giverole = ''
+com_channel = {}
+role_channel = {}
+setrole = {}
+giverole = {}
 
 
 
@@ -192,7 +194,7 @@ class seter() :
         return str(log)
 
 
-role_check = lambda b : {b[i] : True for i in range(len(b))} 
+role_check = lambda b : {b[i].name : True for i in range(len(b))} 
 
 @bot.event
 async def on_ready():
@@ -201,34 +203,41 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='외로운 봇들 귀가시키는 중...'))
 
 @bot.command()
+@has_permissions()
 async def setchannel(ctx,gps,role='',give_role='',channelcode=None):
     if ctx.message.author.guild_permissions.manage_messages:
         global com_channel,role_channel,setrole,giverole
+        guild_id = ctx.guild.id
         if gps == '역할' :
-            setrole = role #중복 방지
-            giverole = give_role #지급 역할
+            setrole[guild_id] = role #중복 방지
+            giverole[guild_id] = discord.utils.get(ctx.guild.roles,name=give_role) #지급 역할
             if ctx.author.voice and ctx.author.voice.channel: # 채널에 들어가 있는지 파악
-                role_channel = ctx.author.voice.channel # 채널 구하기
-                await role_channel.connect() # 채널 연결
+                role_channel[guild_id] = ctx.author.voice.channel # 채널 구하기
+                await role_channel[guild_id].connect() # 채널 연결
                 # await ctx.send('성공!')
             else: # 유저가 채널에 없으면
                 await ctx.send("채널에 연결되지 않았습니다.") # 출력
-            await ctx.send(f'지정된 체널 : {role_channel} , 제외역할 : {setrole}, 주어질 역할 : {giverole}')
+            await ctx.send(f'지정된 체널 : {role_channel[guild_id]} , 제외역할 : {setrole[guild_id]}, 주어질 역할 : {giverole[guild_id]}')
         if gps == '환영' :
-            com_channel = TextChannel.id
+            com_channel[guild_id] = TextChannel.id
             await ctx.send('저장 완료')
-            print(com_channel, TextChannel.id)
+
+@setchannel.error
+async def set_error(ctx,error):
+    if isinstance(error,MissingRequiredArgument):
+        await ctx.send('필수 입력 정보를 입력하세요')
 
 @bot.event
-async def on_member_join(member):
+async def on_member_join(before,after):
     global com_channel
-    channel = com_channel
-    msg = '<@{}>님이 달 저편에 새롭게 착륙하셨습니다 모두 환영해 주세요'.format(str(member.id))
+    guild_id = after.guild.id
+    channel = com_channel[guild_id]
+    msg = '<@{}>님이 달 저편에 새롭게 착륙하셨습니다 모두 환영해 주세요'.format(str(after.id))
     await channel.send(msg)
 
 @bot.event
 async def on_voice_state_update(member,before,after):
-    guild = discord.Guild.id
+    guild_id = discord.Guild.id
     try :
         print(type(before.channel))
         if len(before.channel.members) == 1 :
@@ -240,13 +249,16 @@ async def on_voice_state_update(member,before,after):
     try :
         print(type(after.channel))
         print(after.channel)
-        if after.channel == role_channel :
-            for people in after.channel.memebers :
+        if after.channel == role_channel[guild_id] :
+            for people in after.channel.members :
                 people_roles_dic = role_check(people.roles)
                 print(people_roles_dic)
-                if not people_roles_dic[setrole] :
-                    await people.add_roles(giverole)
-                    print('given')    
+                try :
+                    if people_roles_dic[setrole] == False :
+                        print('setroler')
+                except Exception as e :
+                        await people.add_roles(giverole[guild_id])
+                        print('given')
     except Exception as e :
         print(e)
         print('give')
@@ -262,6 +274,11 @@ async def selfinfo(ctx,name,school1,school2,school3,day,password):
     log = seter(name,school1,school2,school3,day,password).setdata()
     await ctx.send(str(log))
 
+@selfinfo.error
+async def selfinfo_error(ctx,error):
+    if isinstance(error,MissingRequiredArgument):
+        await ctx.send('자가진단 정보를 전부 입력하세요')
+
 @bot.command()
 async def selfstart(ctx,name) :
     await ctx.channel.purge(limit=1)
@@ -269,11 +286,33 @@ async def selfstart(ctx,name) :
     log = seter(name).start()
     await ctx.send(log)
 
+@selfstart.error
+async def start_error(ctx, error):
+    if isinstance(error, MissingRequiredArgument):
+        await ctx.send('이름을 입력하세요')
+
+
 
 @bot.command()
+@has_permissions()
 async def delmsg(ctx,num : int):
     await ctx.channel.purge(limit=num + 1)
     await ctx.send(f'{num}개 청소 완료')
+
+@delmsg.error
+async def delmsg_error(ctx,error):
+    if isinstance(error,MissingRequiredArgument):
+        await ctx.send('삭제할 메세지 개수를 입력하세요')
+    if isinstance(error, BadArgument):
+        await ctx.send('숫자로 입력하세요')
+
+@bot.command
+async def version(ctx):
+    await ctx.send('2.0.0')
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send(f'pong! {round(bot.latency + 1000)}ms')
 
 @bot.command()
 async def help(ctx) :
@@ -287,7 +326,7 @@ async def help(ctx) :
 @bot.command()
 async def helpc(ctx) :
     embed = discord.Embed(title='helpc',description='명령어 도움말',color=0x00aaaa)
-    embed.add_field(name='setchannel',value='신규유저의 알림을 전송할 방을 지정해요',inline=False)
+    embed.add_field(name='setchannel',value='특정 행동을 할 방을 지정해요 (역할, 환영)',inline=False)
     embed.add_field(name='selfinfo',value='자가진단 정보를 입력해요',inline=False)
     embed.add_field(name='selfstart',value='자가진단을 시작해요(1회)',inline=False)
     await ctx.send(embed=embed)
@@ -297,6 +336,12 @@ async def chelp(ctx, m):
     if m == 'selfinfo' :
         embed = discord.Embed(title='chelp',description='명령어 사용 도움말',color=0x00aaaa)
         embed.add_field(name='자가진단 정보를 입력해요',value='selfinfo 이름 지역 학교급 학교이름 생일(6자리) 비밀번호',inline=False)
+        await ctx.send(embed=embed)
+    if m == 'setchannel' :
+        embed = discord.Embed(title='chelp',description='명령어 사용 도움말',color=0x00aaaa)
+        embed.add_field(name='특정 행동을 할 방을 지정해요',value='역할, 환영',inline=False)
+        embed.add_field(name='역할',value='음성채널에 들어간 상태로 사용해요 *setchannel 환영 지급제외역할 지급할역할',inline=False)
+        embed.add_field(name='환영',value='신규인원 환영메세지를 출력해요',inline=False)
         await ctx.send(embed=embed)
 
 bot.run("ODU0NjU3ODExMjE5NDgwNjA2.YMnIHA.KtV3aIqRS6wjcMSrY1cuRHKSTB0")
