@@ -38,7 +38,7 @@ class natural():
 
 
 
-bot = commands.Bot(command_prefix='>>>')
+bot = commands.Bot(command_prefix='-')
 bot.remove_command('help')
 
 B_version = '2.2.4'
@@ -212,6 +212,7 @@ async def setchannel(ctx,gps,role : discord.Role = None,give_role : discord.Role
             rolegiver_dic[guild_id] = [ctx.author.voice.channel,[role, give_role]]  # 채널 구하기 #중복 방지,지급 역할
             if ctx.author.voice and ctx.author.voice.channel: # 채널에 들어가 있는지 파악 # 채널 구하기
                 await rolegiver_dic[guild_id][0].connect() # 채널 연결
+                await ctx.send('저장')
                 await ctx.send(f'지정된 체널 : {rolegiver_dic[guild_id][0]} , 제외역할 : {rolegiver_dic[guild_id][0][0]}, 주어질 역할 : {rolegiver_dic[guild_id][0][1]}')
             else: # 유저가 채널에 없으면
                 await ctx.send("채널에 연결되지 않았습니다.") # 출력
