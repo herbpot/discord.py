@@ -41,7 +41,7 @@ class natural():
 bot = commands.Bot(command_prefix='>>>')
 bot.remove_command('help')
 
-
+B_version = 2.2.4
 com_channel = {}
 rolegiver_dic = {}
 
@@ -326,7 +326,7 @@ async def delmsg_error(ctx,error):
 
 @bot.command(name='version',help='봇의 버전을 출력합니다',usage='version')
 async def version(ctx):
-    await ctx.send('now verion : 2.2.2')
+    await ctx.send(f'now verion : {B_version}')
 
 @bot.command(name='ping',help='핑을 출력합니다',usage='ping')
 async def ping(ctx):
