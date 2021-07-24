@@ -6,7 +6,6 @@ import traceback
 from discord.ext.commands.core import has_permissions
 from discord.ext.commands.errors import BadArgument, MissingRequiredArgument
 from discord.ext import commands
-from discord.guild import Guild
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -39,8 +38,9 @@ class natural():
 
 
 
-bot = commands.Bot(command_prefix='lenu')
+bot = commands.Bot(command_prefix='/')
 bot.remove_command('help')
+
 
 com_channel = {}
 rolegiver_dic = {}
