@@ -199,7 +199,7 @@ role_check = lambda b : {b[i].name : True for i in range(len(b))}
 async def on_ready():
     print(bot.user.name)
     print('디스코드세계를 돌아다니는 중이에요')
-    await bot.change_presence(activity=discord.Game(name='외로운 봇들 귀가시키는 중...'))
+    await bot.change_presence(activity=discord.Game(name="'/' 듣기와 음악봇 보내주기"))
 
 @bot.command(name='setchannel',help='역할부여,환영인사 출력을 설정체널에서 합니다',usage='setchannel 옵션 (필요하다면)제외역할 (필요하다면)부여역할')
 @has_permissions()
