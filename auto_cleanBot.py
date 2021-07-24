@@ -6,6 +6,7 @@ import traceback
 from discord.ext.commands.core import has_permissions
 from discord.ext.commands.errors import BadArgument, MissingRequiredArgument
 from discord.ext import commands
+from discord.guild import Guild
 from selenium.webdriver.support.ui import Select
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -42,10 +43,7 @@ bot = commands.Bot(command_prefix='*')
 bot.remove_command('help')
 
 com_channel = {}
-role_channel = {}
-setrole = {}
-giverole = {}
-
+rolegiver_dic = {}
 
 
 URL_login, URL_main = 'https://hcs.eduro.go.kr/#/loginHome', 'https://hcs.eduro.go.kr/#/main'
@@ -205,24 +203,36 @@ async def on_ready():
 
 @bot.command(name='setchannel',help='역할부여,환영인사 출력을 설정체널에서 합니다',usage='*setchannel 옵션 (필요하다면)제외역할 (필요하다면)부여역할')
 @has_permissions()
-async def setchannel(ctx,gps,role='',give_role='',channelcode=None):
+async def setchannel(ctx,gps,role : discord.Role = None,give_role : discord.Role = None,channelcode=None):
     if ctx.message.author.guild_permissions.manage_messages:
-        global com_channel,role_channel,setrole,giverole
+        global com_channel,rolegiver_dic
         guild_id = ctx.guild.id
         if gps == '역할' :
-            setrole[guild_id] = role #중복 방지
-            giverole[guild_id] = discord.utils.get(ctx.guild.roles,name=give_role) #지급 역할
-            if ctx.author.voice and ctx.author.voice.channel: # 채널에 들어가 있는지 파악
-                role_channel[guild_id] = ctx.author.voice.channel # 채널 구하기
-                await role_channel[guild_id].connect() # 채널 연결
-                # await ctx.send('성공!')
+            print(role,'/',give_role)
+            rolegiver_dic[guild_id] = [ctx.author.voice.channel,[role, give_role]]  # 채널 구하기 #중복 방지,지급 역할
+            if ctx.author.voice and ctx.author.voice.channel: # 채널에 들어가 있는지 파악 # 채널 구하기
+                await rolegiver_dic[guild_id][0].connect() # 채널 연결
+                await ctx.send(f'지정된 체널 : {rolegiver_dic[guild_id][0]} , 제외역할 : {rolegiver_dic[guild_id][0][0]}, 주어질 역할 : {rolegiver_dic[guild_id][0][1]}')
             else: # 유저가 채널에 없으면
                 await ctx.send("채널에 연결되지 않았습니다.") # 출력
-            await ctx.send(f'지정된 체널 : {role_channel[guild_id]} , 제외역할 : {setrole[guild_id]}, 주어질 역할 : {giverole[guild_id]}')
         if gps == '환영' :
             com_channel[guild_id] = TextChannel.id
             await ctx.send('저장 완료')
 
+@bot.command(name='setlist', help='역할부여의 설정값이나 환영인사의 설정 체널을 불러옵니다',usage='*setlist (환영/역할)')
+async def settinglist(ctx,option=None) :
+    if option is not None :
+        if option == '역할' :
+            embed = discord.Embed(title='settinglist',description='역할지정이 설정된 방입니다',color=0x00aaaa)
+            embed.add_field(name='채널 제외역할 지급역할',value=f'{rolegiver_dic}',inline=False)
+            await ctx.send(embed=embed)
+
+        if option == '환영' :
+            embed = discord.Embed(title='settinglist',description='환영메세지 출력이 설정된 방입니다',color=0x00aaaa)
+            embed.add_field(name='채널',value=f'{com_channel}',inline=False)
+            await ctx.send(embed=embed)
+
+    
 @setchannel.error
 async def set_error(ctx,error):
     if isinstance(error,MissingRequiredArgument):
@@ -238,31 +248,38 @@ async def on_member_join(before,after):
 
 @bot.event
 async def on_voice_state_update(member,before,after):
-    guild_id = discord.Guild.id
+    global rolegiver_dic
+    guild_id = int(member.guild.id)
     try :
-        print(type(before.channel))
+        # print(type(before.channel))
         if len(before.channel.members) == 1 :
             if before.channel.members[0].bot :
                 await before.channel.members[0].move_to(None)
     except Exception as e :
-        print(e)
-        print('leave')
+        # print(e)
+        # print('leave')
+        e = e
+    print(guild_id)
     try :
-        print(type(after.channel))
-        print(after.channel)
-        if after.channel == role_channel[guild_id] :
+        # print(type(after.channel))
+        # print(after.channel)
+        print(rolegiver_dic)
+        print(rolegiver_dic[guild_id])
+        if after.channel == rolegiver_dic[guild_id][0] :
             for people in after.channel.members :
                 people_roles_dic = role_check(people.roles)
                 print(people_roles_dic)
                 try :
-                    if people_roles_dic[setrole] == False :
+                    if people_roles_dic[rolegiver_dic[guild_id][1][0]] == False :
+                        e=e
                         print('setroler')
                 except Exception as e :
-                        await people.add_roles(giverole[guild_id])
+                        await people.add_roles(rolegiver_dic[guild_id][1][1])
                         print('given')
     except Exception as e :
-        print(e)
-        print('give')
+        e=e
+        # print(e,'error')
+        # print('give')
     # print(after.channel.members)
     # print(before.channel.members)
 
@@ -309,7 +326,7 @@ async def delmsg_error(ctx,error):
 
 @bot.command(name='version',help='봇의 버전을 출력합니다',usage='*version')
 async def version(ctx):
-    await ctx.send('now verion : 2.1.1')
+    await ctx.send('now verion : 2.2.1')
 
 @bot.command(name='ping',help='핑을 출력합니다',usage='*ping')
 async def ping(ctx):
