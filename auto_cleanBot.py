@@ -41,7 +41,7 @@ class natural():
 bot = commands.Bot(command_prefix='>>>')
 bot.remove_command('help')
 
-B_version = 2.2.4
+B_version = '2.2.4'
 com_channel = {}
 rolegiver_dic = {}
 
