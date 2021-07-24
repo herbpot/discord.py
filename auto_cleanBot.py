@@ -39,7 +39,7 @@ class natural():
 
 
 
-bot = commands.Bot(command_prefix='*')
+bot = commands.Bot(command_prefix='lenu')
 bot.remove_command('help')
 
 com_channel = {}
@@ -201,7 +201,7 @@ async def on_ready():
     print('디스코드세계를 돌아다니는 중이에요')
     await bot.change_presence(activity=discord.Game(name='외로운 봇들 귀가시키는 중...'))
 
-@bot.command(name='setchannel',help='역할부여,환영인사 출력을 설정체널에서 합니다',usage='*setchannel 옵션 (필요하다면)제외역할 (필요하다면)부여역할')
+@bot.command(name='setchannel',help='역할부여,환영인사 출력을 설정체널에서 합니다',usage='setchannel 옵션 (필요하다면)제외역할 (필요하다면)부여역할')
 @has_permissions()
 async def setchannel(ctx,gps,role : discord.Role = None,give_role : discord.Role = None,channelcode=None):
     if ctx.message.author.guild_permissions.manage_messages:
@@ -219,7 +219,7 @@ async def setchannel(ctx,gps,role : discord.Role = None,give_role : discord.Role
             com_channel[guild_id] = TextChannel.id
             await ctx.send('저장 완료')
 
-@bot.command(name='setlist', help='역할부여의 설정값이나 환영인사의 설정 체널을 불러옵니다',usage='*setlist (환영/역할)')
+@bot.command(name='setlist', help='역할부여의 설정값이나 환영인사의 설정 체널을 불러옵니다',usage='setlist (환영/역할)')
 async def settinglist(ctx,option=None) :
     if option is not None :
         if option == '역할' :
@@ -285,7 +285,7 @@ async def on_voice_state_update(member,before,after):
 
             
 
-@bot.command(name='selfinfo',help='자가진단에 필요한 정보를 입력,저장합니다',usage='*selfinfo 이름 지역 학교급 학교이름 생일(6자리) 비밀번호')
+@bot.command(name='selfinfo',help='자가진단에 필요한 정보를 입력,저장합니다',usage='selfinfo 이름 지역 학교급 학교이름 생일(6자리) 비밀번호')
 async def selfinfo(ctx,name,school1,school2,school3,day,password):
     await ctx.channel.purge(limit=1)
     await ctx.send('자가진단 정보 저장 중...')
@@ -297,7 +297,7 @@ async def selfinfo_error(ctx,error):
     if isinstance(error,MissingRequiredArgument):
         await ctx.send('자가진단 정보를 전부 입력하세요')
 
-@bot.command(name='selfstart', help='자가진단을 시작합니다',usage='*selfstart 이름')
+@bot.command(name='selfstart', help='자가진단을 시작합니다',usage='selfstart 이름')
 async def selfstart(ctx,name) :
     await ctx.channel.purge(limit=1)
     await ctx.send('자가진단 중...')
@@ -311,7 +311,7 @@ async def start_error(ctx, error):
 
 
 
-@bot.command(name='delmsg',help='메세지를 삭제합니다',usage='*delmsg 삭제할메세지개수')
+@bot.command(name='delmsg',help='메세지를 삭제합니다',usage='delmsg 삭제할메세지개수')
 @has_permissions()
 async def delmsg(ctx,num : int):
     await ctx.channel.purge(limit=num + 1)
@@ -324,11 +324,11 @@ async def delmsg_error(ctx,error):
     if isinstance(error, BadArgument):
         await ctx.send('숫자로 입력하세요')
 
-@bot.command(name='version',help='봇의 버전을 출력합니다',usage='*version')
+@bot.command(name='version',help='봇의 버전을 출력합니다',usage='version')
 async def version(ctx):
     await ctx.send('now verion : 2.2.2')
 
-@bot.command(name='ping',help='핑을 출력합니다',usage='*ping')
+@bot.command(name='ping',help='핑을 출력합니다',usage='ping')
 async def ping(ctx):
     await ctx.send(f'pong! {round(bot.latency + 1000)}ms')
 
@@ -358,7 +358,7 @@ async def chelp(ctx, m):
     if m == 'setchannel' :
         embed = discord.Embed(title='chelp',description='명령어 사용 도움말',color=0x00aaaa)
         embed.add_field(name='특정 행동을 할 방을 지정해요',value='역할, 환영',inline=False)
-        embed.add_field(name='역할',value='음성채널에 들어간 상태로 사용해요 *setchannel 환영 지급제외역할 지급할역할',inline=False)
+        embed.add_field(name='역할',value='음성채널에 들어간 상태로 사용해요 setchannel 환영 지급제외역할 지급할역할',inline=False)
         embed.add_field(name='환영',value='신규인원 환영메세지를 출력해요',inline=False)
         await ctx.send(embed=embed)
 
