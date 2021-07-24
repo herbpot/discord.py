@@ -326,7 +326,7 @@ async def delmsg_error(ctx,error):
 
 @bot.command(name='version',help='봇의 버전을 출력합니다',usage='*version')
 async def version(ctx):
-    await ctx.send('now verion : 2.2.1')
+    await ctx.send('now verion : 2.2.2')
 
 @bot.command(name='ping',help='핑을 출력합니다',usage='*ping')
 async def ping(ctx):
