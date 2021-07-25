@@ -391,4 +391,4 @@ async def help_command(self, ctx, func=None):
                     else:
                         command_notfound = True
 
-bot.run("ODU0NjU3ODExMjE5NDgwNjA2.YMnIHA.KCGX_Z1UzkNSPjhPXWSmnuV7q3c")
+bot.run("토큰")
